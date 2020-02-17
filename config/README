@@ -1,0 +1,2 @@
+#This script is mainly used to determe the result of validation. Specifically, you can separate the RMSE of each adsorbate just by modifing the context of 'validation.py'.
+1. INPUT: mutil-adsorbates and correspending ID of final line in the validation set(*the validation set include the title line)

@@ -1,0 +1,15 @@
+[DEFAULT]
+#the path used to store
+pathway = '/p/project/lmcat/wenxu/jobs/SISSO'
+#the name of validation or test file
+val_name = xtest4.py
+#the name of ads or folder  /root_name/xr/xd
+root_name = enforce4mix
+type_ads = OH OOH
+#length of each ads : the value is the number ID of final row
+length_ads = 38 75
+#name : error. hyper-parameter as input 
+opt_dimension = 8
+
+[root]
+number_rung = [0,1]
