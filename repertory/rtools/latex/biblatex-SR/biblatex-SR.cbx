@@ -1,0 +1,35 @@
+\ProvidesFile{biblatex-SR.cbx}
+[2011/03/21 v1.0e biblatex citation style]
+
+\RequireCitationStyle{numeric-comp}
+\ExecuteBibliographyOptions{%
+  autocite=superscript,autopunct=true,sorting=none}
+  
+\DeclareCiteCommand{\supercite}[\mkbibsuperscript]
+  {\usebibmacro{cite:init}%
+   \let\multicitedelim=\supercitedelim
+   \iffieldundef{prenote}
+     {}
+     {\BibliographyWarning{Ignoring prenote argument}}%
+   \iffieldundef{postnote}
+     {}
+     {\BibliographyWarning{Ignoring postnote argument}}%
+   \bibleftbracket %no brackets in supercites
+   }
+  {\usebibmacro{citeindex}%
+   \usebibmacro{cite:comp}}
+  {}
+  {\usebibmacro{cite:dump}%
+   \bibrightbracket %no brackets in supercites
+   }
+   
+\DeclareCiteCommand{\numcite}%[\mkbibbrackets]
+  {\usebibmacro{cite:init}%
+   \usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \usebibmacro{cite:comp}}
+  {}
+  {\usebibmacro{cite:dump}%
+   \usebibmacro{postnote}}
+
+\endinput

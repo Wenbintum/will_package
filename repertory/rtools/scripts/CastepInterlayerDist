@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+
+import numpy as np
+import sys
+
+from ase.io.castep import read_cell
+from ase.io.castep import read_geom
+
+
+f=sys.argv[-1]
+
+if f.endswith('.geom'):
+    atoms = read_geom(f)[-1]
+elif f.endswith('.cell'):
+    atoms = read_cell(f)
+else:
+    raise RuntimeError("Unknown file extension")
+
+
+# evaluate the interlayer-distances
+Zs = np.unique(atoms.get_positions()[:,-1])
+
+ds = np.abs(Zs[:-1]-Zs[1:])
+
+msg = '\t\tResulting interlayer distances'
+max_dist_info = 10
+
+if len(ds)> max_dist_info:
+    msg += ' (first {} distances only)'.format(max_dist_info)
+print(msg+':')
+
+for i,d in enumerate(ds):
+    if i >= max_dist_info:
+        print('\t\t...')
+        break
+
+    print('\t\t\t{:10s} : {:.3f}'.format('d_{}-{}'.format(i+1, i+2), d))

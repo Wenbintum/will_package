@@ -1,0 +1,485 @@
+%modified biblatex-science-Style
+
+
+\ProvidesFile{biblatex-SR.bbx}[2012/03/15 v1.1 biblatex bibliography style]
+
+% Load the standard style to avoid copy-pasting unnecessary material
+\RequireBibliographyStyle{numeric-comp}
+
+% Additional options
+\newtoggle{bbx:article-title}
+\DeclareBibliographyOption{article-title}[true]{%
+  \settoggle{bbx:article-title}{#1}%
+}
+
+
+% Alter settings that carry through from biblatex
+\ExecuteBibliographyOptions{
+  article-title = false ,
+  maxnames      = 99    ,
+  maxcitenames  = 2     ,
+  useprefix             ,
+%------------modified------------------
+  doi = false,
+  sortcites = true,
+  firstinits = true,
+  isbn = true,
+  hyperref=true,
+  babel=hyphen,
+  sorting = none,
+  firstinits=true
+}
+
+%\citeauthor umdefiniert
+\DeclareCiteCommand{\citeauthor}
+{\defcounter{maxnames}{2}%
+\defcounter{minnames}{1}%
+\boolfalse{citetracker}%
+\boolfalse{pagetracker}%
+\usebibmacro{prenote}}
+{\ifciteindex
+{\indexnames{labelname}}
+{}%
+\printnames{labelname}}
+{\multicitedelim}
+{\usebibmacro{postnote}} % Durch den Befehl \citeauthor*{} wird immer nach dem ersten Namen mit et al. abgekürzt
+%\renewcommand*{\bibopenparen}{[}
+%\renewcommand*{\bibcloseparen}{]}
+%\renewcommand*{\finalnamedelim}{ and }
+%.-------------------------------------------
+
+\DefineBibliographyStrings{ngerman}{andothers={\itshape et\addabbrvspace al\adddot}} %Mehrere Autoren werden mit et al. abgekürzt
+\DefineBibliographyStrings{english}{andothers={\itshape et\addabbrvspace al\adddot}} %Mehrere Autoren werden mit et al. abgekürzt
+\DeclareCiteCommand{\citeauthor}
+{\defcounter{maxnames}{2}%
+\defcounter{minnames}{1}%
+\boolfalse{citetracker}%
+\boolfalse{pagetracker}%
+\usebibmacro{prenote}}
+{\ifciteindex
+{\indexnames{labelname}}
+{}%
+\printnames{labelname}}
+{\multicitedelim}
+{\usebibmacro{postnote}} % Durch den Befehl \citeauthor*{} wird immer nach dem ersten Namen mit et al. abgekürzt
+
+%-------------------------------------
+
+% Modify the name format
+\DeclareNameFormat{default}{%
+  \usebibmacro{name:first-last}{#1}{#4}{#5}{#7}%
+  \usebibmacro{name:andothers}%
+}
+
+\newbibmacro*{name:andothers}{%
+  \ifboolexpr{
+    test {\ifnumequal{\value{listcount}}{\value{liststop}}}
+    and
+    test \ifmorenames
+  }
+    {%
+      \ifnumgreater{\value{liststop}}{1}
+        {\finalandcomma}
+        {}%
+      \andothersdelim
+      \bibstring[\mkbibemph]{andothers}%
+    }
+    {}%
+}
+
+% Field formats for the bibliography environment
+\DeclareFieldFormat{labelnumberwidth}{\bibleftbracket #1\bibrightbracket}
+
+% Custom field formats 
+\DeclareFieldFormat{edition}{%
+  \ifinteger{#1}
+    {\mkbibordedition{#1}\space\bibstring{edition}}
+    {#1}%
+}
+\DeclareFieldFormat{doi}{%
+  DOI\addcolon\addspace
+  \ifhyperref
+    {\href{http://dx.doi.org/#1}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+    
+\DeclareFieldFormat[inproceedings]{booktitle}{#1}
+%-----------------modified-------------------------
+\DeclareFieldFormat[article]{pages}{\mkfirstpage{#1}} %Biblatex ab 1.7
+%\DeclareFieldFormat[article]{pages}{#1}
+\DeclareFieldFormat[article]{year}{(#1)}
+%--------------------------------------------------
+\DeclareFieldFormat[proceedings]{title}{#1}
+%------------------modified------------------------
+%\DeclareFieldFormat[article]{title}{#1\adddot\space\nopunct}
+%\DeclareFieldFormat[book]{title}{\mkbibemph{#1}\adddotspace}
+\DeclareFieldFormat[book]{isbn}{%
+  \mkbibacro{ISBN}\addcolon\space
+  \ifhyperref
+    {\href{http://www.worldcat.org/isbn/#1}{#1}}
+    {#1}}
+
+\DeclareFieldFormat[incollection]{isbn}{%
+  \mkbibacro{ISBN}\addcolon\space
+  \ifhyperref
+    {\href{http://www.worldcat.org/isbn/#1}{#1}}
+    {#1}}
+%--------------------------------------------------
+\DeclareFieldFormat[report]{title}{\mkbibquote{#1}}
+\DeclareFieldFormat{url}{\url{#1}}
+\DeclareFieldFormat[article,periodical]{volume}{\mkbibbold{#1}}
+%---------------modified---------------------------
+\DeclareFieldAlias[article]{journaltitle}{noformat} %Journal nicht kursiv gesetzt
+\DeclareFieldFormat[article]{title}{%
+  \ifboolexpr{
+    test \ifhyperref
+    and
+    not test {\iffieldundef{doi}}
+  }
+    {\href{http://dx.doi.org/\thefield{doi}}{\mkbibemph{#1}}}
+    {\mkbibemph{#1}}}
+    
+\DeclareFieldFormat[unpublished]{title}{%
+  \ifboolexpr{
+    test \ifhyperref
+    and
+    not test {\iffieldundef{doi}}
+  }
+    {\href{http://dx.doi.org/\thefield{doi}}{\mkbibemph{#1}}}
+    {\mkbibemph{#1}}}
+    
+\DeclareFieldFormat[incollection]{title}{%
+  \ifboolexpr{
+    test \ifhyperref
+    and
+    not test {\iffieldundef{doi}}
+  }
+    {\href{http://dx.doi.org/\thefield{doi}}{\mkbibemph{#1}}}
+    {\mkbibemph{#1}}}
+    
+\DeclareFieldFormat[thesis]{title}{%
+  \ifboolexpr{
+    test \ifhyperref
+    and
+    not test {\iffieldundef{url}}
+  }
+    {\href{\thefield{url}}{\mkbibemph{#1}}}
+    {\mkbibemph{#1}}}
+%--------------------------------------------------
+
+% Simple modifications to punctuation, etc.
+%---------------modified---------------------------
+%\let\finalnamedelim\multinamedelim
+%--------------------------------------------------
+\renewcommand*\intitlepunct{\addspace}
+\renewcommand*\newunitpunct{\addcomma\space}
+
+% Bibliography strings
+\NewBibliographyString{presentedat}
+
+\DefineBibliographyStrings{english}{
+  edition     = edition                   ,
+  editor      = Ed\adddot                 ,
+  editors     = Eds\adddot                ,
+  patentus    = US Patent                 ,
+  presentedat = presented at the\addspace ,
+}
+
+\DefineBibliographyStrings{american}{
+  edition     = edition                   ,
+  editor      = Ed\adddot                 ,
+  editors     = Eds\adddot                ,
+  patentus    = US Patent                 ,
+  presentedat = presented at the\addspace ,
+}
+
+
+% Bibliography macros
+\renewbibmacro*{event+venue+date}{%
+  \printfield{eventtitle}%
+  \ifboolexpr{
+    test {\iffieldundef{venue}}
+    and
+    test {\iffieldundef{eventyear}}
+  }
+    {}
+    {%
+      \printfield{venue}%
+      \newunit
+      \iffieldundef{eventyear}
+        {%
+          \printdate
+          \clearfield{year}%
+        }
+        {%
+          \printeventdate
+          \clearfield{eventyear}%
+        }%
+    }%
+  \newunit
+}
+
+\renewbibmacro*{institution+location+date}{%
+  \ifboolexpr{
+    test {\iflistundef{institution}}
+    and
+    test {\iflistundef{location}}
+    and
+    test {\iffieldundef{edition}}
+    and
+    test {\iffieldundef{date}}
+  }
+    {}
+    {%
+      \nopunct
+      \printtext[parens]{%                     
+        \printlist{institution}%
+        \newunit
+        \printlist{location}%
+        \newunit
+        \printfield{edition}\bibstring{edition}%
+        \newunit
+        \usebibmacro{date}%
+      }%
+    }%
+}
+
+\newbibmacro*{volume+page+year}{%
+  \printfield{volume}%
+  \newunit
+  \printfield{pages}
+  \setunit*{\addspace}%
+  \printfield{year}
+}
+
+\newbibmacro*{journal+issuetitle}{%
+  \usebibmacro{journal}%
+  \setunit*{\addspace}%
+  \iffieldundef{series}
+    {}
+    {%
+      \newunit
+      \printfield{series}%
+      \setunit{\addspace}%
+    }%
+  \printfield{volume}%
+%-------------modified-------------
+  %\newunit
+  %\usebibmacro{issue}%
+%---------------------------------
+  \newunit
+}
+
+\renewbibmacro*{publisher+location+date}{%
+  \ifboolexpr{
+    test {\iflistundef{publisher}}
+    and
+    test {\iflistundef{location}}
+    and
+    test {\iffieldundef{edition}}
+    and
+    test {\iffieldundef{year}}
+  }
+    {}
+    {%
+      %\nopunct
+      \printtext[]{%
+        \printfield{edition}%
+        \newunit\newblock                   
+        \printlist{publisher}%
+        \newunit
+        \printlist{location}%
+        \newunit
+        \printfield{year}%
+      }%
+    }%
+}
+
+% New bibliography drivers, using the required order of fields. These
+% are mainly copied from standard.bbx then modified.
+
+
+\DeclareBibliographyDriver{article}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{author}%
+  \newunit\newblock
+%------------modified------------------  
+  \iftoggle{bbx:article-title}
+      {\usebibmacro{title}}
+      {}%
+      \newunit\newblock
+%-------------------------------------
+  \usebibmacro{journal}%
+  \setunit*{\addspace}%
+  \usebibmacro{volume+page+year}%
+  \newunit\newblock
+%------------modified------------------
+  \iftoggle{bbx:doi}
+    {\printfield{doi}}
+    {}%
+    \newunit\newblock
+%-------------------------------------
+  \usebibmacro{addendum+pubstate}%
+  \newunit\newblock
+  \usebibmacro{pageref}%
+  \usebibmacro{finentry}}
+\DeclareBibliographyDriver{thesis}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{author}%
+  \newunit\newblock
+%------------modified------------------  
+  \iftoggle{bbx:article-title}
+      {\usebibmacro{title}}
+      {}%
+      \newunit\newblock
+%-------------------------------------
+  \newunit\newblock
+  \printfield{type}%
+  \newunit\newblock
+  \printlist{institution}%
+  \newunit\newblock
+  \printlist{location}%
+  \newunit\newblock
+  \usebibmacro{date}%
+  \newunit\newblock
+  \usebibmacro{addendum+pubstate}%
+  \newunit\newblock
+  \usebibmacro{pageref}%
+  \usebibmacro{finentry}}
+
+
+
+\DeclareBibliographyDriver{book}{%
+	\usebibmacro{bibindex}%
+	\usebibmacro{begentry}%
+	\usebibmacro{author}
+	\newblock\newunit
+	\usebibmacro{title}
+	\newblock\newunit
+	\usebibmacro{publisher+location+date}
+	\newunit\newblock
+	\iftoggle{bbx:isbn}
+	    {\printfield{isbn}}
+	    {}%
+	\newunit\newblock
+	\usebibmacro{pageref}%
+	\usebibmacro{finentry}
+	}
+
+\DeclareBibliographyAlias{inbook}{book}
+
+\DeclareBibliographyAlias{proceedings}{book}
+
+\DeclareBibliographyAlias{inproceedings}{book}
+
+\DeclareBibliographyDriver{unpublished}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{author}%
+  \newunit\newblock
+  \usebibmacro{title}%
+  \newunit\newblock
+  \printfield{howpublished}%
+  \newunit\newblock
+  \printlist{location}%
+  \newunit\newblock
+  \usebibmacro{date}%
+  \newunit\newblock
+  \usebibmacro{url+urldate}%
+  \newunit\newblock
+  \usebibmacro{addendum+pubstate}%
+  \newunit\newblock
+  \usebibmacro{pageref}%
+  \usebibmacro{finentry}}
+
+\DeclareBibliographyDriver{online}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{author/editor+others/translator+others}%
+  \setunit{\labelnamepunct}\newblock
+  \usebibmacro{title}%
+  \newunit\newblock
+  \usebibmacro{byauthor}%
+  \newunit\newblock
+  \usebibmacro{byeditor+others}%
+  \newunit\newblock
+  \printfield{version}%
+  \newunit\newblock
+  \printlist{organization}%
+  \newunit\newblock
+  \usebibmacro{date}%
+  \newunit\newblock
+  \usebibmacro{url+urldate}%
+  \newunit\newblock
+  \usebibmacro{addendum+pubstate}%
+  \newunit\newblock
+  \usebibmacro{pageref}%
+  \usebibmacro{finentry}}
+
+\DeclareBibliographyDriver{report}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{author/editor+others/translator+others}%
+  \setunit{\labelnamepunct}\newblock
+  \usebibmacro{title}%
+  \newunit\newblock
+  \usebibmacro{byauthor}%
+  \newunit\newblock
+  \usebibmacro{byeditor+others}%
+  \newunit\newblock
+  \printfield{version}%
+  \newunit\newblock
+  \printlist{institution}%
+  \newunit\newblock
+  \printfield{number}%
+  \newunit\newblock
+  \usebibmacro{date}%
+  \newunit\newblock
+  \usebibmacro{url+urldate}%
+  \newunit\newblock
+  \usebibmacro{addendum+pubstate}%
+  \newunit\newblock
+  \usebibmacro{pageref}%
+  \usebibmacro{finentry}}
+  
+\DeclareBibliographyDriver{incollection}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{author/translator+others}%
+  \setunit{\labelnamepunct}\newblock
+	\usebibmacro{title}%
+  \newunit\newblock
+  \usebibmacro{byauthor}%
+  \newunit\newblock
+  \usebibmacro{in:}%
+  \usebibmacro{maintitle+booktitle}%
+  \newunit\newblock
+  \usebibmacro{byeditor+others}%
+  \newunit\newblock
+  \printfield{volumes}%
+  \newunit\newblock
+  \printfield{note}%
+  \newunit\newblock
+  \usebibmacro{publisher+location+date}%
+  \newunit\newblock
+  \printfield{series}
+  \printfield{volume}
+  \newunit
+  \usebibmacro{chapter+pages}%
+  \newunit\newblock
+  \iftoggle{bbx:isbn}
+    {\printfield{isbn}}
+    {}%
+%------------modified------------------  
+%  \newunit\newblock
+%  \usebibmacro{doi+eprint+url}%
+%-------------------------------------
+  \newunit\newblock
+  \usebibmacro{addendum+pubstate}%
+  \setunit{\bibpagerefpunct}\newblock
+  \usebibmacro{pageref}%
+  \newunit\newblock
+  \usebibmacro{related}%
+  \usebibmacro{finentry}%
+}

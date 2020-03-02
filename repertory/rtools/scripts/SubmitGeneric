@@ -1,0 +1,32 @@
+#!/usr/bin/python
+from rtools.submitagents.arthur import default_argparse, get_defaults
+from rtools.submitagents.arthur.generic import Generic
+
+pa = default_argparse()
+pa.description = """Automagic job submit script for any scripts to be
+executed on Arthur. This can be for example Python scripts using
+ASE to start FHIaims or CASTEP calculations.
+
+Please note: The default option file for this submitagent is
+'~/.rtools/defaults/submitagent_generic.ini'."""
+
+pa.add_argument('-s', '--show_defaults', help='List all defaults for this\
+                submitagent.', action='store_true', dest='list_defaults')
+pa.add_argument('--cmd', help='The full command to be executed on the\
+                cluster.', dest='cmd', type=str)
+
+arg = pa.parse_args()
+
+if arg.list_defaults:
+    defaults = get_defaults("Generic")
+
+    print("")
+    print("The defaults for a Generic job on Arthur are:\n")
+    for key, value in sorted(defaults.iteritems()):
+        print("{0: <20} = {1}".format(key, value))
+else:
+    argdict = dict((k, v) for k, v in arg.__dict__.iteritems() if v is not None)
+    argdict['program'] = ''
+    argdict.pop("list_defaults")
+    R = Generic(**argdict)
+    R.submit()

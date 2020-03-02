@@ -1,0 +1,154 @@
+#!/usr/bin/env python
+
+"""
+Simple daemon to synchronize file content between two locations.
+
+This tool periodically copies from source to dest.
+Files matching the delete pattern will be *moved* from source to dest and a
+symlink from dest to source will be created.
+
+---
+Simon P. Rittmeyer, 2014
+simon.rittmeyer(at)tum.de
+"""
+
+import shutil
+import os
+import subprocess
+import re
+import time 
+
+
+def sync(source_dir, dest_dir, delete_pattern = r'.*\.check.*'):
+    """
+    Main function to synchronize.
+
+    Parameters
+    ----------
+    source_dir : string
+        Directory from where to synchronize
+    
+    dest_dir : string
+        Target directory (eg. with more capacity)
+
+    delete_pattern : string (default = r'.*\.check.*')
+        Regular expression specifying the files that shall be moved from source
+        to dest and afterwards symlinked back. If empty, only synchronization.
+    """
+    print('Synchronizing from {} to {}'.format(source_dir, dest_dir))
+
+
+    source_dir = os.path.abspath(source_dir)
+    dest_dir = os.path.abspath(dest_dir)
+
+    if not os.path.exists(dest_dir):
+        print('\tDestination directory does not exist')
+        os.makedirs(dest_dir)
+        print('\tCreated sync directory')
+    
+    # collect the delete list before copying...
+    delete_list = []
+    for dirpath, dirnames, files in os.walk(source_dir):
+        for f in files:
+            match_obj = re.match(delete_pattern, f)
+            if match_obj:
+                delete_list.append(os.path.join(dirpath, match_obj.group()))
+
+    print('Calling rsync...')
+    print('-'*80)
+    
+    # DO NOT COPY LINKS! This would break the entire mv and symlink-back loop!
+    rsync_str = 'rsync -avP --no-links {}/ {}/'.format(source_dir, dest_dir)
+
+    print('{}'.format(rsync_str))
+
+    subprocess.call(rsync_str.split())
+    
+    print('-'*80)
+    
+    if not delete_list == []:
+        print('-'*80)
+        print('Deleting elements...')
+        for f in delete_list:
+            # If this is already a symlink, do not do anything 
+            if os.path.islink(f):
+                continue
+            original = f
+            copy = f.replace(source_dir, dest_dir)
+            
+            if os.path.exists(copy):
+                print('\t{}'.format(original))
+                os.remove(original)
+                os.symlink(copy, original)
+
+        print('-'*80)
+    
+    print('Synchronization done')
+
+    print('-'*80)
+
+
+def main(sleeptime = 60, **kwargs):
+    """
+    Infinite loop around sync.
+
+    Parameters
+    ----------
+    sleeptime : float/integer
+        Sleep time after each sync command in seconds.
+    
+    source_dir : string
+        Directory from where to synchronize
+    
+    dest_dir : string
+        Target directory (eg. with more capacity)
+
+    delete_pattern : string (default = r'.*\.check.*')
+        Regular expression specifying the files that shall be moved from source
+        to dest and afterwards symlinked back. If empty, only synchronization.
+    """
+    while True:
+        try:
+            print('='*80)
+            print('SyncDaemon running...')
+            print('='*80)
+            
+            sync(**kwargs)
+            print('='*80)
+            print('Current time: {}'.format(time.strftime('%X')))
+            print('Next Synchronization in {} sec'.format(sleeptime))
+            print('='*80)
+            print('')
+
+            time.sleep(sleeptime)
+        
+        except KeyboardInterrupt:
+            print('+'*80)
+            print('Quitting SyncDaemon on user request')
+            print('+'*80)
+
+            break
+
+# arg parser
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Synchronize data')
+
+    parser.add_argument('source_dir', type = str, 
+                        help = 'Source directory')
+    parser.add_argument('dest_dir', type = str, 
+                        help = 'Destination directory')
+    parser.add_argument('-t', '--sleeptime', type = float, 
+                        default = 60,
+                        help = 'Sleeptime in seconds')
+    parser.add_argument('-x', '--delete', type = str, 
+                        default = r'.*/.check.*',
+                        help = 'Delete pattern (regular expression)')
+
+    args = parser.parse_args()
+
+    main(source_dir = args.source_dir,
+         dest_dir = args.dest_dir,
+         sleeptime = args.sleeptime, 
+         delete_pattern = args.delete)

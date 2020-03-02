@@ -1,0 +1,27 @@
+#!/usr/bin/python
+import os
+import sys
+from rtools.submitagents.arthur import default_argparse, get_defaults
+from rtools.submitagents.arthur.pythonscript import PythonScriptAgent
+
+pa = default_argparse()
+pa.description = "Automagic submit for a python run on Arthur."
+pa.add_argument('-s', '--show_defaults', help='List all defaults for this\
+                submitagent.', action='store_true', dest='list_defaults')
+
+
+arg = pa.parse_args()
+
+argdict = dict((k, v) for k, v in arg.__dict__.iteritems() if v is not None)
+
+if arg.list_defaults:
+    defaults = get_defaults("pythonscript", seed="defaults")
+
+    print("")
+    print("The defaults for a Python job on Arthur are:\n")
+    for key, value in sorted(defaults.iteritems()):
+        print("{0: <20} = {1}".format(key, value))
+else:
+    argdict.pop("list_defaults")
+    R = PythonScriptAgent(**argdict)
+    R.submit()

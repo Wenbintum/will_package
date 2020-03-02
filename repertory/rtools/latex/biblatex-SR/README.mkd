@@ -1,0 +1,13 @@
+# BibLaTeX style (more or less) according to the APS guidelines
+
+## Usage
+Simply load the biblatex package via
+	\usepackage{csquotes} % needed for proper hyphenation
+	\usepackage[backend=biber,
+	            urldate = iso8601,
+	            style=biblatex-SR, %if teh style files are in the same folder, otherwise specifythe location 
+	            article-title=true, %article titles can be shown in the bibliography or not (if a doi is given --> article titles become hyperlinks)
+	            ]{biblatex
+	
+
+Other biblatex options may work, but I have not tested to many of them. 'mcite' definitely works.

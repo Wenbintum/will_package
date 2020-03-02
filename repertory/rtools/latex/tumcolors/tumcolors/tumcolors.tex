@@ -1,0 +1,243 @@
+\documentclass{scrartcl}
+\usepackage[names]{xcolor}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{url}
+% -----------------------------------------------------------------------------
+% This is the color palette as recommended in the TUM styleguide:
+% https://portal.mytum.de/corporatedesign/print/styleguide/styleguide_print_band2.pdf/
+%
+% Please note that the package 'xcolor' has to be loaded in order to get the
+% following color definitions to work
+%
+% \usepackage[names]{xcolor}
+%
+% exported using the rtools module on 
+% Mon Jun  1 16:58:56 2015
+% -----------------------------------------------------------------------------
+
+% These are the main colors ('Hausfarben') that are intended to be used in 
+% printed work
+\definecolor{black}{RGB}{  0,   0,   0}
+\definecolor{darkgray}{RGB}{ 88,  88,  90}
+\definecolor{lightgray}{RGB}{217, 218, 219}
+\definecolor{mediumgray}{RGB}{156, 157, 159}
+\definecolor{pantone283}{RGB}{152, 198, 234}
+\definecolor{pantone300}{RGB}{  0, 101, 189}
+\definecolor{pantone301}{RGB}{  0,  82, 147}
+\definecolor{pantone540}{RGB}{  0,  51,  89}
+\definecolor{pantone542}{RGB}{100, 160, 200}
+\definecolor{tumblue}{RGB}{  0, 101, 189}
+\definecolor{tumdarkblue}{RGB}{  0,  82, 147}
+\definecolor{tumgreen}{RGB}{162, 173,   0}
+\definecolor{tumivory}{RGB}{218, 215, 203}
+\definecolor{tumlightblue}{RGB}{152, 198, 234}
+\definecolor{tumorange}{RGB}{227, 114,  34}
+\definecolor{white}{RGB}{255, 255, 255}
+
+% This is the extended color palette for presentations only!
+\definecolor{acc_blue}{RGB}{  0, 153, 255}
+\definecolor{acc_darkred}{RGB}{202,  33,  63}
+\definecolor{acc_green}{RGB}{145, 172, 107}
+\definecolor{acc_lightblue}{RGB}{ 65, 190, 255}
+\definecolor{acc_lightgreen}{RGB}{181, 202, 130}
+\definecolor{acc_orange}{RGB}{255, 128,   0}
+\definecolor{acc_red}{RGB}{229,  52,  24}
+\definecolor{acc_yellow}{RGB}{255, 180,   0}
+
+% This is the extended color palette for diagramms
+\definecolor{diag_darkgreen}{RGB}{  0, 124,  48}
+\definecolor{diag_darkred}{RGB}{156,  13,  22}
+\definecolor{diag_gold}{RGB}{249, 186,   0}
+\definecolor{diag_green}{RGB}{103, 154,  29}
+\definecolor{diag_orange}{RGB}{214,  76,  13}
+\definecolor{diag_pantone283}{RGB}{152, 198, 234}
+\definecolor{diag_pantone300}{RGB}{  0, 101, 189}
+\definecolor{diag_pantone301}{RGB}{  0,  82, 147}
+\definecolor{diag_pantone540}{RGB}{  0,  51,  89}
+\definecolor{diag_pantone542}{RGB}{100, 160, 200}
+\definecolor{diag_petrol}{RGB}{  0, 119, 138}
+\definecolor{diag_purple}{RGB}{105,   8,  90}
+\definecolor{diag_red}{RGB}{196,   7,  27}
+\definecolor{diag_tumgreen}{RGB}{162, 173,   0}
+\definecolor{diag_tumivory}{RGB}{218, 215, 203}
+\definecolor{diag_tumorange}{RGB}{227, 114,  34}
+\definecolor{diag_violet}{RGB}{ 15,  27,  95}
+\definecolor{diag_yellow}{RGB}{255, 220,   0}
+
+% All colors may be blended with white in given ratios. These are denoted
+% with subscripts indicating the blending ratio (85%, 75%, and 55%).
+% 
+% Here, we make use of the xcolor package to create the blended colors
+%
+\colorlet{diag_darkgreen_85}{diag_darkgreen!85!white}
+\colorlet{diag_darkgreen_70}{diag_darkgreen!70!white}
+\colorlet{diag_darkgreen_55}{diag_darkgreen!55!white}
+\colorlet{diag_darkred_85}{diag_darkred!85!white}
+\colorlet{diag_darkred_70}{diag_darkred!70!white}
+\colorlet{diag_darkred_55}{diag_darkred!55!white}
+\colorlet{diag_gold_85}{diag_gold!85!white}
+\colorlet{diag_gold_70}{diag_gold!70!white}
+\colorlet{diag_gold_55}{diag_gold!55!white}
+\colorlet{diag_green_85}{diag_green!85!white}
+\colorlet{diag_green_70}{diag_green!70!white}
+\colorlet{diag_green_55}{diag_green!55!white}
+\colorlet{diag_orange_85}{diag_orange!85!white}
+\colorlet{diag_orange_70}{diag_orange!70!white}
+\colorlet{diag_orange_55}{diag_orange!55!white}
+\colorlet{diag_pantone283_85}{diag_pantone283!85!white}
+\colorlet{diag_pantone283_70}{diag_pantone283!70!white}
+\colorlet{diag_pantone283_55}{diag_pantone283!55!white}
+\colorlet{diag_pantone300_85}{diag_pantone300!85!white}
+\colorlet{diag_pantone300_70}{diag_pantone300!70!white}
+\colorlet{diag_pantone300_55}{diag_pantone300!55!white}
+\colorlet{diag_pantone301_85}{diag_pantone301!85!white}
+\colorlet{diag_pantone301_70}{diag_pantone301!70!white}
+\colorlet{diag_pantone301_55}{diag_pantone301!55!white}
+\colorlet{diag_pantone540_85}{diag_pantone540!85!white}
+\colorlet{diag_pantone540_70}{diag_pantone540!70!white}
+\colorlet{diag_pantone540_55}{diag_pantone540!55!white}
+\colorlet{diag_pantone542_85}{diag_pantone542!85!white}
+\colorlet{diag_pantone542_70}{diag_pantone542!70!white}
+\colorlet{diag_pantone542_55}{diag_pantone542!55!white}
+\colorlet{diag_petrol_85}{diag_petrol!85!white}
+\colorlet{diag_petrol_70}{diag_petrol!70!white}
+\colorlet{diag_petrol_55}{diag_petrol!55!white}
+\colorlet{diag_purple_85}{diag_purple!85!white}
+\colorlet{diag_purple_70}{diag_purple!70!white}
+\colorlet{diag_purple_55}{diag_purple!55!white}
+\colorlet{diag_red_85}{diag_red!85!white}
+\colorlet{diag_red_70}{diag_red!70!white}
+\colorlet{diag_red_55}{diag_red!55!white}
+\colorlet{diag_tumgreen_85}{diag_tumgreen!85!white}
+\colorlet{diag_tumgreen_70}{diag_tumgreen!70!white}
+\colorlet{diag_tumgreen_55}{diag_tumgreen!55!white}
+\colorlet{diag_tumivory_85}{diag_tumivory!85!white}
+\colorlet{diag_tumivory_70}{diag_tumivory!70!white}
+\colorlet{diag_tumivory_55}{diag_tumivory!55!white}
+\colorlet{diag_tumorange_85}{diag_tumorange!85!white}
+\colorlet{diag_tumorange_70}{diag_tumorange!70!white}
+\colorlet{diag_tumorange_55}{diag_tumorange!55!white}
+\colorlet{diag_violet_85}{diag_violet!85!white}
+\colorlet{diag_violet_70}{diag_violet!70!white}
+\colorlet{diag_violet_55}{diag_violet!55!white}
+\colorlet{diag_yellow_85}{diag_yellow!85!white}
+\colorlet{diag_yellow_70}{diag_yellow!70!white}
+\colorlet{diag_yellow_55}{diag_yellow!55!white}
+
+\begin{document}
+\section*{TUM Corporate Design Color Definitions}
+The color definitions listed below are available via the \texttt{rtools.tumcd.export\_latex()} function. They are defined as mentioned in the TUM CD guide available at \url{https://portal.mytum.de/corporatedesign/print/styleguide/styleguide_print_band2.pdf/}. Colors for diagrams are as well available as blends with white in defined ratios. Just append \texttt{\_X} to the color name, where \texttt{X} is the mixing ratio as mentioned in the table.
+
+
+\begin{longtable}{l m{7cm}}
+\toprule
+\multicolumn{2}{c}{\textbf{Main colors (``Hausfarben'')}}
+\\\midrule
+\texttt{black} & \cellcolor{black}
+\\\midrule
+\texttt{darkgray} & \cellcolor{darkgray}
+\\\midrule
+\texttt{lightgray} & \cellcolor{lightgray}
+\\\midrule
+\texttt{mediumgray} & \cellcolor{mediumgray}
+\\\midrule
+\texttt{pantone283} & \cellcolor{pantone283}
+\\\midrule
+\texttt{pantone300} & \cellcolor{pantone300}
+\\\midrule
+\texttt{pantone301} & \cellcolor{pantone301}
+\\\midrule
+\texttt{pantone540} & \cellcolor{pantone540}
+\\\midrule
+\texttt{pantone542} & \cellcolor{pantone542}
+\\\midrule
+\texttt{tumblue} & \cellcolor{tumblue}
+\\\midrule
+\texttt{tumdarkblue} & \cellcolor{tumdarkblue}
+\\\midrule
+\texttt{tumgreen} & \cellcolor{tumgreen}
+\\\midrule
+\texttt{tumivory} & \cellcolor{tumivory}
+\\\midrule
+\texttt{tumlightblue} & \cellcolor{tumlightblue}
+\\\midrule
+\texttt{tumorange} & \cellcolor{tumorange}
+\\\midrule
+\texttt{white} & \cellcolor{white}
+\\\bottomrule
+\end{longtable}
+
+
+\begin{longtable}{l m{7cm}}
+\toprule
+\multicolumn{2}{c}{\textbf{Extended accent colors (for presentations only!)}}
+\\\midrule
+\texttt{acc\_blue} & \cellcolor{acc_blue}
+\\\midrule
+\texttt{acc\_darkred} & \cellcolor{acc_darkred}
+\\\midrule
+\texttt{acc\_green} & \cellcolor{acc_green}
+\\\midrule
+\texttt{acc\_lightblue} & \cellcolor{acc_lightblue}
+\\\midrule
+\texttt{acc\_lightgreen} & \cellcolor{acc_lightgreen}
+\\\midrule
+\texttt{acc\_orange} & \cellcolor{acc_orange}
+\\\midrule
+\texttt{acc\_red} & \cellcolor{acc_red}
+\\\midrule
+\texttt{acc\_yellow} & \cellcolor{acc_yellow}
+\\\bottomrule
+\end{longtable}
+
+
+\begin{longtable}{l m{2cm} m{2cm} m{2cm} m{2cm}}
+\toprule
+\multicolumn{5}{c}{\textbf{Extended diagram colors and respective blends with white}}
+\\\midrule
+& 
+&\texttt{$\ast$\_85}&\texttt{$\ast$\_70}&\texttt{$\ast$\_55}
+\\\midrule
+\texttt{diag\_darkgreen} & \cellcolor{diag_darkgreen} & \cellcolor{diag_darkgreen_85} & \cellcolor{diag_darkgreen_70} & \cellcolor{diag_darkgreen_55}
+\\\midrule
+\texttt{diag\_darkred} & \cellcolor{diag_darkred} & \cellcolor{diag_darkred_85} & \cellcolor{diag_darkred_70} & \cellcolor{diag_darkred_55}
+\\\midrule
+\texttt{diag\_gold} & \cellcolor{diag_gold} & \cellcolor{diag_gold_85} & \cellcolor{diag_gold_70} & \cellcolor{diag_gold_55}
+\\\midrule
+\texttt{diag\_green} & \cellcolor{diag_green} & \cellcolor{diag_green_85} & \cellcolor{diag_green_70} & \cellcolor{diag_green_55}
+\\\midrule
+\texttt{diag\_orange} & \cellcolor{diag_orange} & \cellcolor{diag_orange_85} & \cellcolor{diag_orange_70} & \cellcolor{diag_orange_55}
+\\\midrule
+\texttt{diag\_pantone283} & \cellcolor{diag_pantone283} & \cellcolor{diag_pantone283_85} & \cellcolor{diag_pantone283_70} & \cellcolor{diag_pantone283_55}
+\\\midrule
+\texttt{diag\_pantone300} & \cellcolor{diag_pantone300} & \cellcolor{diag_pantone300_85} & \cellcolor{diag_pantone300_70} & \cellcolor{diag_pantone300_55}
+\\\midrule
+\texttt{diag\_pantone301} & \cellcolor{diag_pantone301} & \cellcolor{diag_pantone301_85} & \cellcolor{diag_pantone301_70} & \cellcolor{diag_pantone301_55}
+\\\midrule
+\texttt{diag\_pantone540} & \cellcolor{diag_pantone540} & \cellcolor{diag_pantone540_85} & \cellcolor{diag_pantone540_70} & \cellcolor{diag_pantone540_55}
+\\\midrule
+\texttt{diag\_pantone542} & \cellcolor{diag_pantone542} & \cellcolor{diag_pantone542_85} & \cellcolor{diag_pantone542_70} & \cellcolor{diag_pantone542_55}
+\\\midrule
+\texttt{diag\_petrol} & \cellcolor{diag_petrol} & \cellcolor{diag_petrol_85} & \cellcolor{diag_petrol_70} & \cellcolor{diag_petrol_55}
+\\\midrule
+\texttt{diag\_purple} & \cellcolor{diag_purple} & \cellcolor{diag_purple_85} & \cellcolor{diag_purple_70} & \cellcolor{diag_purple_55}
+\\\midrule
+\texttt{diag\_red} & \cellcolor{diag_red} & \cellcolor{diag_red_85} & \cellcolor{diag_red_70} & \cellcolor{diag_red_55}
+\\\midrule
+\texttt{diag\_tumgreen} & \cellcolor{diag_tumgreen} & \cellcolor{diag_tumgreen_85} & \cellcolor{diag_tumgreen_70} & \cellcolor{diag_tumgreen_55}
+\\\midrule
+\texttt{diag\_tumivory} & \cellcolor{diag_tumivory} & \cellcolor{diag_tumivory_85} & \cellcolor{diag_tumivory_70} & \cellcolor{diag_tumivory_55}
+\\\midrule
+\texttt{diag\_tumorange} & \cellcolor{diag_tumorange} & \cellcolor{diag_tumorange_85} & \cellcolor{diag_tumorange_70} & \cellcolor{diag_tumorange_55}
+\\\midrule
+\texttt{diag\_violet} & \cellcolor{diag_violet} & \cellcolor{diag_violet_85} & \cellcolor{diag_violet_70} & \cellcolor{diag_violet_55}
+\\\midrule
+\texttt{diag\_yellow} & \cellcolor{diag_yellow} & \cellcolor{diag_yellow_85} & \cellcolor{diag_yellow_70} & \cellcolor{diag_yellow_55}
+\\\bottomrule
+\end{longtable}
+
+\vfill\hfill\itshape This document was generated on Mon Jun  1 16:58:56 2015
+\end{document}

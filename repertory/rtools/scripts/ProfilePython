@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+outfile="profile.out"
+
+# run the python program
+python -m cProfile -o ${outfile} $@ 
+
+# visualize
+runsnake ${outfile}

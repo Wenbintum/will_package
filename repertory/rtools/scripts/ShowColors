@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+
+from rtools.helpers.matplotlibhelpers import show_colors 
+
+show_colors()

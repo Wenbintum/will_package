@@ -1,0 +1,22 @@
+#!/usr/bin/python
+
+"""
+Rename all files in current folder. First argument is replaced by second
+argument, the remainder of the filename stays the same.
+
+---
+Simon Rittmeyer (simon.rittmeyer(at)tum.de), 2013-07-11
+"""
+
+import os
+import sys
+
+old_str = sys.argv[1]
+new_str = sys.argv[2]
+
+for data in os.listdir('.'):
+	if old_str in data:
+		old = data
+		new = data.replace(old_str,new_str)
+		print('rename : %s  -->   %s'%(old, new))
+		os.rename(old,new)

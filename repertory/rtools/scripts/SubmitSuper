@@ -1,0 +1,67 @@
+#!/usr/bin/python
+#
+# This is a very simple example of a job submit generation script for supermuc.
+# Please adjust appropriately!
+#
+
+import argparse
+
+parser = argparse.ArgumentParser(description="Get parameters for screening run")
+parser.add_argument('-n', help='number of nodes (nodes x 28 = CPUs)',
+                    dest="nnodes", default=3, type=int)
+parser.add_argument('-N', help='jobname', dest="name")
+parser.add_argument('-t', help='walltime', dest="walltime", default="24:00:00")
+parser.add_argument('-c', help='class', dest="class", default="micro")
+parser.add_argument('-e', help='energy policy', dest="energy_pol")
+
+
+arg = parser.parse_args()
+
+arg_dict = vars(arg)
+
+arg_dict["email"] = 'yourmail@bla'
+
+arg_dict["ncpus"] = arg.nnodes*28
+
+jobstr = """#!/bin/bash
+##
+## optional: energy policy tags
+##
+# DO NOT USE environment = COPY_ALL
+#@ job_type = MPICH
+#@ class = {class}
+#@ node = {nnodes}
+
+### schedule the job to 1 to 2 islands
+#@ island_count=1
+#@ total_tasks={ncpus}
+
+#@ wall_clock_limit = {walltime}
+##                    1 h 20 min 30 secs
+
+#@ energy_policy_tag = {energy_pol}
+#@ minimize_time_to_solution = yes
+
+#@ job_name = {name}
+#@ network.MPI = sn_all,not_shared,us
+
+#@ output = job.$(schedd_host).$(jobid).out
+#@ error =  job.$(schedd_host).$(jobid).err
+#@ notification=always
+#@ notify_user={email}
+#@ queue
+
+. /etc/profile
+. /etc/profile.d/modules.sh
+#setup of environment
+module unload mpi.ibm
+module load mpi.intel
+module load mkl
+module load scalapack
+
+python /home/hpc/pr86de/di25hag/bin/qmmm_lambda.py {ncpus}
+
+""".format(**arg_dict)
+
+with open("submit.job", "w") as f:
+    f.write(jobstr)

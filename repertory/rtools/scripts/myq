@@ -1,0 +1,120 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# hints: cd to folder on tick by running the script with the job number, e.g. 
+# $: python qstat-xml.py 1
+# This will create a cd-command to switch to the work-folder of the first job
+# and copy it the clipboard (strg+shift+v)
+
+from lxml import etree
+import sys
+import subprocess
+import os
+import pickle
+
+def check_output(*popenargs, **kwargs):
+    r"""Run command with arguments and return its output as a byte string.
+
+    Backported from Python 2.7 as it's implemented as pure python on stdlib.
+
+    >>> check_output(['/usr/bin/python', '--version'])
+    Python 2.6.2
+    """
+    process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
+    output, unused_err = process.communicate()
+    retcode = process.poll()
+    if retcode:
+        cmd = kwargs.get("args")
+        if cmd is None:
+            cmd = popenargs[0]
+        error = subprocess.CalledProcessError(retcode, cmd)
+        error.output = output
+        raise error
+    return output
+
+
+username = check_output(['whoami']).strip() # whoami only for local cluster
+
+queue = check_output(['qstat', '-x'])
+
+parser = etree.XMLParser(ns_clean=True, recover=True)
+root = etree.fromstring(queue, parser)
+test = []
+
+# check for jobs, either "Job_Owner" or "Mail_Users". With "whoami" better "Job_Owner"
+for i in root:
+    test.extend(i.xpath('Job_Owner'))
+    
+jobs_temp = []
+    
+for i in test:
+    if username in i.text:
+        jobs_temp.append(i)
+        
+jobs = []
+for i in jobs_temp:
+    jobs.append(i.getparent())
+    
+job_data = []
+    
+for i in jobs:
+    try:
+        job_data.append([[i], i.xpath('job_state'), i.xpath('Job_Name'), i.xpath('exec_host')[0].text])
+    except:
+        job_data.append([[i], i.xpath('job_state'), i.xpath('Job_Name'), "--/xxx"])
+         
+str_blank = " "
+try:
+    job = int(sys.argv[1])-1
+    working_path = "/net/{0}/scratch/{1}/{2}".format(job_data[job][3].split("/")[0], username, job_data[job][0][0].text)
+    comm = "cd {0}".format(working_path)
+    print(comm)
+    p = subprocess.Popen(['xsel', '-bi'], stdin=subprocess.PIPE)
+    p.communicate(input=comm)
+    
+
+except:
+    try:
+        jobfile = "/data/" + username + "/.pbs_jobs"
+        f = open(jobfile, "r")
+        old_jobs = f.readlines()
+        f.close()
+        # new jobs/ids
+        actual_jobs = []
+        for i in job_data:
+            job_id = (i[0][0].text).split(".")[0]
+            job_name = i[2][0].text[0:35]
+            actual_jobs.append(";".join([job_id, job_name+"\n"]))
+
+    except:
+        None
+
+    #brut force formatting, could be more elegant...
+    outhead = "  #{0}Job_ID {1}S {2}Job_Name {4}Tick\n {3}".format(2*str_blank, 3*str_blank, 4*str_blank, 88*"-", 29*str_blank)
+    out = ""
+    f = open(jobfile, "w")
+    print(outhead)
+    for num, i in enumerate(job_data):
+        #format all stuff
+        job_num = num+1
+        job_id = (i[0][0].text).split(".")[0]
+        job_state = i[1][0].text
+        job_name = i[2][0].text[0:35]
+        tick = i[3].split("/")[0]
+    #    exec_time = i[4]
+        print(" {0:2}  {1}    {2}     {3:36}  {4}").format(job_num, job_id, job_state, job_name, tick)     
+        f.write(";".join([job_id, job_name]))
+        f.write("\n")
+    f.close()
+    try:
+        print(" ")
+        diff = False
+        for i in old_jobs:
+            if i not in actual_jobs:
+                print("Finished job: {0} {1}".format(i.split(";")[0], i.split(";")[1]))
+                diff = True
+        if diff == False:
+            print("No finished jobs since last qstat, be patient!")
+    except:
+        print(" ")
+        print("No saved job list, path should be: {0}!".format(jobfile))

@@ -1,0 +1,42 @@
+#!/usr/bin/python
+import os
+import sys
+from rtools.submitagents.arthur import default_argparse, get_defaults
+from rtools.submitagents.arthur.castep import Castep
+
+pa = default_argparse()
+pa.description = "Automagic submit for a CASTEP run on Arthur."
+pa.add_argument('-s', '--show_defaults', help='List all defaults for this\
+                submitagent.', action='store_true', dest='list_defaults')
+
+pa.add_argument('--seed', help='The seed for the castep calculation.',
+                dest='seed', default=None)
+pa.add_argument('--ppdir', help='Path to CASTEP pseudopotential files. \
+                Either this option or the PSPOT_DIR environment variable must \
+                be set.',
+                dest='pp_dir', type=str)
+
+arg = pa.parse_args()
+
+argdict = dict((k, v) for k, v in arg.__dict__.iteritems() if v is not None)
+
+if arg.list_defaults:
+    defaults = get_defaults("castep", seed="defaults")
+
+    print("")
+    print("The defaults for a CASTEP job on Arthur are:\n")
+    for key, value in sorted(defaults.iteritems()):
+        print("{0: <20} = {1}".format(key, value))
+else:
+    if argdict["seed"] is None:
+        sys.exit("No seed given!")
+    if argdict["pp_dir"] is None:
+        pp = os.getenv("PSPOT_DIR")
+        if pp is None:
+            print("Warning: No pseudopotential directory given.\
+                  This may lead to numerically inconsistent results.")
+        argdict["pp_dir"] = pp
+
+    argdict.pop("list_defaults")
+    R = Castep(**argdict)
+    R.submit()

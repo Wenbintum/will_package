@@ -1,0 +1,171 @@
+#!/usr/bin/env python
+# coding: utf-8
+#
+# tum mensa script for lazy people
+# uses lxml
+#
+# -- christoph (very minor fixes by Harald)
+import subprocess
+import re
+import urllib
+from lxml import html
+import sys
+import datetime
+import socket
+
+
+class food:
+    """Script to show menu for TUM mensa and Max Planck mensa.
+
+    Can parse and show the menu from the html menu of the mensa webpage and the
+    PDF from the Max Plank mensa..
+
+    Attributes:
+    """
+    def __init__(self):
+        daydict = {"Monday": "Montag",
+                   "Tuesday": "Dienstag",
+                   "Wednesday": "Mittwoch",
+                   "Thursday": "Donnerstag",
+                   "Friday": "Freitag",
+                   "Saturday": "EOW",
+                   "Sunday": "EOW"}
+
+        self.now = datetime.datetime.now()
+        self.date = self.now.strftime("%d.%m.%Y")
+        self.week = self.now.isocalendar()[1]
+
+        self.weekday = daydict[self.now.strftime("%A")]
+        self.tomorrow = daydict[(self.now +
+                                 datetime.timedelta(days=1)).strftime("%A")]
+
+        try:
+	        ip = socket.gethostbyname(socket.gethostname())
+                if '192.168.' in ip:
+                        self.proxies = {'http': 'http://proxy:3128'}
+                else:
+                        self.proxies = {}
+        except socket.gaierror:
+                self.proxies = {}
+
+        # mensa
+        self.art = None
+        self.name = None
+
+        # mpi
+        self.mpi_food = None
+
+    def get_mensa(self):
+        fp = urllib.urlopen("http://www.studentenwerk-muenchen.de/mensa/speiseplan/speiseplan_422_-de.html", proxies=self.proxies)
+        page = html.fromstring(fp.read())
+        days = page.xpath(".//*[@id='c552']/table")
+
+        for num, day in enumerate(days):
+            date_table = str(day.xpath("./tr[1]/td[2]/span[1]/a[1]/strong/text()")).split()[-1].strip("[']")
+            day_table = str(day.xpath("./tr[1]/td[2]/span[1]/a[1]/strong/text()")).split()[0].strip("[']")
+            if date_table == self.date:
+                self.art = day.xpath("./tr/td[1]/span/text()")
+                self.name = day.xpath("./tr/td[2]/span[1]/text()")
+
+    def get_mpi(self):
+        url = "http://www.betriebsrestaurant-gmbh.de/index.php?id=91/"
+        mediaurl = "http://www.betriebsrestaurant-gmbh.de/"
+        fp = urllib.urlopen(url, proxies=self.proxies)
+        page = html.fromstring(fp.read())
+
+        all_weeks = page.find_class("csc-uploads-fileName")
+        links = []
+        for week in all_weeks:
+            links.append(list(week.iterlinks())[0][2])
+
+        for item in links:
+            # only MPI mensa
+            if "IPP" in item:
+                if "KW{:02d}".format(self.week) in item:
+                    link = item
+
+        pdffile = urllib.urlretrieve(mediaurl+link)[0]
+        content = subprocess.check_output(["pdftotext", pdffile , "-"])
+
+        formatted = content.split("\n")
+
+        p = re.compile("\d{1}\.\d{2}").match
+
+        new = list()
+        for line in formatted:
+            if not p(line):
+                if line != "":
+                    new.append(line)
+
+        # loop to get food..
+        end = None
+        for num, line in enumerate(new):
+            if self.weekday.lower() in line.lower():
+                start = num
+            elif self.tomorrow.lower() in line.lower():
+                end = num
+            elif str("B.n.W.=Beilage nach Wahl").lower() in line.lower():
+                skip = num
+
+        if self.weekday != "Freitag":
+            self.mpi_food = new[start:end]
+        elif self.weekday == "Freitag":
+            self.mpi_food = new[start:skip]
+
+    def print_mensa(self):
+        """ Print the menu of the mensa."""
+        self.crazy_people()
+        self.get_mensa()
+        # print(u"\033[91m{0}\033[0m".format(39*u" \u2620"))
+        print("Today, in mensa they try to poison you with:")
+        for num, a in enumerate(self.art):
+            a.encode("utf-8")
+            print("{0:12} | {1}".format(str(a),
+                                        self.name[num+2].encode("utf-8")))
+        print(78*"-")
+        print("Good luck!")
+        # print(u"\033[91m{0}\033[0m".format(39*u" \u2620"))
+
+    def print_mpi(self):
+        """Print the menu of the Max Planck mensa."""
+        self.crazy_people()
+        self.get_mpi()
+        print("")
+        print("Less poisonous but more expensive is Max Planck with..")
+        print(78*"-")
+        for line in self.mpi_food[1:]:
+            print(line)
+        print(78*"-")
+
+    def print_all(self):
+        """ Print the menu of the mensa and the MPI mensa."""
+        self.print_mensa()
+        self.print_mpi()
+
+    def crazy_people(self):
+        if self.weekday == "EOW":
+            sys.exit("You are crazy! Its {0}! There is no food for you today..".format(self.now.strftime("%A")))
+
+if __name__ == "__main__":
+
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Mensa food.")
+
+    parser.add_argument('-m, --mensa', help='Print the menu for the mensa.',
+                        dest='mensa', action="store_true")
+    parser.add_argument('-p, --mpi', help='Print the menu for Max Planck.',
+                        dest='mpi', action="store_true")
+
+    arg = parser.parse_args()
+
+    waiter = food()
+
+    if arg.mensa and not arg.mpi:
+        waiter.print_mensa()
+    elif arg.mpi and not arg.mensa:
+        waiter.print_mpi()
+    elif arg.mensa and arg.mpi:
+        waiter.print_all()
+    else:
+        waiter.print_all()

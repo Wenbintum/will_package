@@ -1,0 +1,25 @@
+#!/usr/bin/python
+
+from rtools.submitagents.arthur import default_argparse, get_defaults
+from rtools.submitagents.arthur.aims import Aims
+
+pa = default_argparse()
+pa.description = "Automagic job submit script for FHIaims jobs on Arthur."
+
+pa.add_argument('-s', '--show_defaults', help='List all defaults for this\
+                submitagent.', action='store_true', dest='list_defaults')
+
+arg = pa.parse_args()
+
+if arg.list_defaults:
+    defaults = get_defaults("aims", job_dir=".")
+
+    print("")
+    print("The defaults for a FHIaims job on Arthur are:\n")
+    for key, value in sorted(defaults.iteritems()):
+        print("{0: <20} = {1}".format(key, value))
+else:
+    argdict = dict((k, v) for k, v in arg.__dict__.iteritems() if v is not None)
+    argdict.pop("list_defaults")
+    R = Aims(**argdict)
+    R.submit()

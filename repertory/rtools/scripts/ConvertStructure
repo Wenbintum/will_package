@@ -1,0 +1,20 @@
+#!/usr/bin/python
+
+import ase.io
+import argparse
+
+parser = argparse.ArgumentParser(description="Convert structure files")
+
+parser.add_argument('input', help='The input structure.', type=str)
+parser.add_argument('output', help='The output file name.', type=str)
+parser.add_argument('-o', '--out-format', help='The desired output format\
+(if not specified by the file extension.', type=str, dest='format')
+
+arg = parser.parse_args()
+
+mol = ase.io.read(arg.input)
+
+if arg.format:
+    ase.io.write(arg.output, mol, format=arg.format)
+else:
+    ase.io.write(arg.output, mol)

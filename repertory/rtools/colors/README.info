@@ -1,0 +1,10 @@
+tumcolors.clr
+    MacOSX Keynote color palette. To be stored at ~/Library/Colors
+
+tumcolors.tex
+    LaTeX color palette. Either to be loaded via \input{} or pasted in main
+    document
+
+tumcolors.gpl
+    GNU color palette. Can be used within GIMP, Inkscape, Scribus,... See the
+    respective documentations on the web for installation guide lines.

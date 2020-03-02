@@ -1,0 +1,8 @@
+#!/usr/bin/env python
+from __future__ import print_function
+import sys
+from rtools.helpers.castephelpers import read_energy
+
+E = read_energy(sys.argv[-1])
+
+print('NB est. 0K energy (E-0.5TS) = {} eV'.format(E))

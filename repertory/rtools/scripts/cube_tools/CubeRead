@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+# This file is part of rtools.
+#
+#    rtools is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    rtools is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with rtools.  If not, see <http://www.gnu.org/licenses/>.
+
+"""
+Little script that reads a cube file at a certain position.
+First cmd-line argument is the cubefile, followed by three arguments specifying
+the coordinates of the position.
+
+---
+Simon P. Rittmeyer, 2015
+simon.rittmeyer(at)tum.de
+"""
+
+from rtools.cube import read_cube_val
+import sys
+
+pos = np.array([float(i) for i in sys.argv[2::]])
+
+val = read_cube_val(sys.argv[1], pos)
+
+print('Cube value at {} = {} rs'.format(pos, val))
